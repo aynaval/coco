@@ -1,0 +1,60 @@
+openapi: 3.0.3
+info:
+  title: Azure OpenAI Question API
+  version: 1.0.0
+  description: API that allows Watson Orchestrate to ask questions using Azure OpenAI with Bearer Token authentication.
+
+servers:
+  - url: http://localhost:8000  # Replace with your deployed URL when integrating
+
+paths:
+  /ask:
+    post:
+      operationId: askQuestion
+      summary: Ask a question to Azure OpenAI
+      description: Sends a natural language question and receives a response from Azure OpenAI.
+      tags:
+        - openai
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionRequest'
+      responses:
+        '200':
+          description: A response from Azure OpenAI
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnswerResponse'
+        '401':
+          description: Unauthorized - Missing or invalid token
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  # Not required to be JWT, just a label
+
+  schemas:
+    QuestionRequest:
+      type: object
+      required:
+        - question
+      properties:
+        question:
+          type: string
+          description: The question to ask Azure OpenAI
+
+    AnswerResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+          description: The answer returned by Azure OpenAI
